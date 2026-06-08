@@ -33,15 +33,11 @@ const setupAdmin = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Name, email, and password are required.' });
     }
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
     // Create super_admin
     const user = new User({
       name,
       email,
-      password: hashedPassword,
+      password,
       role: 'super_admin'
     });
 
@@ -54,6 +50,10 @@ const setupAdmin = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
+    if (req.body.password) {
+      const salt = await bcrypt.genSalt(10);
+      req.body.password = await bcrypt.hash(req.body.password, salt);
+    }
     const updatedData = await User.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (!updatedData) return res.status(404).json({ success: false, message: 'Not found' });
     res.status(200).json({ success: true, data: updatedData });
