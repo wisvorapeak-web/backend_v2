@@ -23,9 +23,37 @@ app.use(cors());
 app.use(express.json()); // Parses incoming JSON requests
 app.use(express.urlencoded({ extended: true }));
 
-// Basic route for testing
+// Comprehensive health check route
 app.get('/', (req, res) => {
-  res.send('Wiswora API is running');
+  const mongoose = require('mongoose');
+  const dbState = mongoose.connection.readyState;
+  const dbStatusMap = {
+    0: 'Disconnected',
+    1: 'Connected',
+    2: 'Connecting',
+    3: 'Disconnecting',
+    99: 'Uninitialized'
+  };
+
+  const healthData = {
+    status: 'OK',
+    message: 'Wiswora API is running',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+    nodeVersion: process.version,
+    memoryUsage: {
+      rss: `${Math.round(process.memoryUsage().rss / 1024 / 1024 * 100) / 100} MB`,
+      heapTotal: `${Math.round(process.memoryUsage().heapTotal / 1024 / 1024 * 100) / 100} MB`,
+      heapUsed: `${Math.round(process.memoryUsage().heapUsed / 1024 / 1024 * 100) / 100} MB`,
+      external: `${Math.round(process.memoryUsage().external / 1024 / 1024 * 100) / 100} MB`,
+    },
+    database: {
+      state: dbState,
+      status: dbStatusMap[dbState] || 'Unknown'
+    }
+  };
+
+  res.status(200).json(healthData);
 });
 
 // Protect sensitive API routes
