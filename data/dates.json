@@ -1,0 +1,32 @@
+[
+  {
+    "_id": "69c8ebef75bcaf92889b6dc0",
+    "event": "Standard Registration",
+    "date": "2026-06-12T00:00:00.000Z",
+    "description": "Standard Registration",
+    "display_order": 0,
+    "createdAt": "2026-03-29T09:07:59.864Z",
+    "updatedAt": "2026-03-29T09:07:59.864Z",
+    "__v": 0
+  },
+  {
+    "_id": "69f837ee8c8cf73c51473902",
+    "event": "Early Bird Deadline ",
+    "date": "2026-06-20T00:00:00.000Z",
+    "description": "Early Bird Deadline ",
+    "display_order": 0,
+    "createdAt": "2026-05-04T06:08:46.928Z",
+    "updatedAt": "2026-06-01T09:27:48.058Z",
+    "__v": 0
+  },
+  {
+    "_id": "69c8ec3b75bcaf92889b6dc9",
+    "event": "Abstract Submission Open",
+    "date": "2026-10-16T00:00:00.000Z",
+    "description": "Abstract Submission Deadline",
+    "display_order": 0,
+    "createdAt": "2026-03-29T09:09:15.246Z",
+    "updatedAt": "2026-03-29T09:10:04.020Z",
+    "__v": 0
+  }
+]

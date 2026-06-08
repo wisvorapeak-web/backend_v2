@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Dr. Sarah Johnson",
+    "role": "Organizing Chair",
+    "university": "MIT",
+    "country": "USA",
+    "image_url": "https://randomuser.me/api/portraits/women/44.jpg",
+    "linkedin_url": "https://linkedin.com/in/sarahjohnson",
+    "bio": "Expert in biotechnology and lead organizer for the event.",
+    "category": "Leader",
+    "display_order": 1,
+    "is_active": true
+  },
+  {
+    "name": "John Doe",
+    "role": "Technical Coordinator",
+    "university": "Stanford",
+    "country": "USA",
+    "image_url": "https://randomuser.me/api/portraits/men/32.jpg",
+    "linkedin_url": "",
+    "bio": "Coordinates technical sessions.",
+    "category": "Team",
+    "display_order": 2,
+    "is_active": true
+  }
+]
