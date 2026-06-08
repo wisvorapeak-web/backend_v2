@@ -26,6 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 // Comprehensive health check route
 app.get('/', (req, res) => {
   const mongoose = require('mongoose');
+  const bulkEmailController = require('./controllers/bulkEmailController');
   const dbState = mongoose.connection.readyState;
   const dbStatusMap = {
     0: 'Disconnected',
@@ -50,7 +51,8 @@ app.get('/', (req, res) => {
     database: {
       state: dbState,
       status: dbStatusMap[dbState] || 'Unknown'
-    }
+    },
+    emailProgress: bulkEmailController.getProgress()
   };
 
   res.status(200).json(healthData);

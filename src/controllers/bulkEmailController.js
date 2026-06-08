@@ -1,5 +1,17 @@
 const nodemailer = require('nodemailer');
 
+// Global progress tracker
+const emailSendingProgress = {
+  isActive: false,
+  total: 0,
+  sent: 0,
+  failed: 0,
+  startTime: null,
+  lastUpdated: null,
+};
+
+exports.getProgress = () => emailSendingProgress;
+
 exports.sendBulkEmails = async (req, res) => {
   try {
     const { senderName, senderEmail, subject, message, recipients } = req.body;
@@ -26,6 +38,14 @@ exports.sendBulkEmails = async (req, res) => {
     let sentCount = 0;
     const errors = [];
 
+    // Reset progress tracker
+    emailSendingProgress.isActive = true;
+    emailSendingProgress.total = recipients.length;
+    emailSendingProgress.sent = 0;
+    emailSendingProgress.failed = 0;
+    emailSendingProgress.startTime = new Date().toISOString();
+    emailSendingProgress.lastUpdated = new Date().toISOString();
+
     // Send emails
     for (const recipient of recipients) {
       if (!recipient.email) continue;
@@ -42,11 +62,16 @@ exports.sendBulkEmails = async (req, res) => {
       try {
         await transporter.sendMail(mailOptions);
         sentCount++;
+        emailSendingProgress.sent = sentCount;
       } catch (error) {
         console.error(`Failed to send email to ${recipient.email}:`, error);
         errors.push({ email: recipient.email, error: error.message });
+        emailSendingProgress.failed = errors.length;
       }
+      emailSendingProgress.lastUpdated = new Date().toISOString();
     }
+
+    emailSendingProgress.isActive = false;
 
     res.status(200).json({
       success: true,
@@ -57,6 +82,7 @@ exports.sendBulkEmails = async (req, res) => {
     });
   } catch (error) {
     console.error('Error in sendBulkEmails:', error);
+    emailSendingProgress.isActive = false;
     res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 };
