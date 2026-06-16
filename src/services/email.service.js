@@ -45,3 +45,42 @@ exports.sendReceiptEmail = async (registration, payment) => {
     console.error("Error sending receipt email:", error);
   }
 };
+
+exports.sendCustomPaymentLinkEmail = async (email, linkData, publicLinkUrl) => {
+  if (!process.env.SMTP_USER) {
+    console.warn("SMTP_USER not configured, skipping payment link email.");
+    return;
+  }
+
+  const currencySymbol = linkData.currency === 'INR' ? '₹' : '$';
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+      <h2 style="color: #2CC8E5; text-align: center;">Payment Request</h2>
+      <p>Hello,</p>
+      <p>A new payment request has been generated for you.</p>
+      <div style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; margin: 20px 0;">
+        <p><strong>Description:</strong> ${linkData.title}</p>
+        <p><strong>Amount Due:</strong> ${currencySymbol}${linkData.amount}</p>
+      </div>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${publicLinkUrl}" style="background-color: #2CC8E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; font-weight: bold;">Pay Now</a>
+      </div>
+      <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
+      <p><a href="${publicLinkUrl}">${publicLinkUrl}</a></p>
+      <p>Best Regards,<br/>${process.env.SMTP_FROM_NAME || 'The Team'}</p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: `"${process.env.SMTP_FROM_NAME || 'The Team'}" <${process.env.SMTP_USER}>`,
+      to: email,
+      subject: `Payment Request: ${linkData.title}`,
+      html: html,
+    });
+    console.log(`Payment link email sent to ${email}`);
+  } catch (error) {
+    console.error("Error sending payment link email:", error);
+  }
+};

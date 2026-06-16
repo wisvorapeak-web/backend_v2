@@ -104,6 +104,7 @@ app.use('/api/payments', require('./routes/payment.routes'));
 app.use('/api/venue-galleries', require('./routes/venueGallery.routes'));
 // app.use('/api/mail', require('./routes/mailRoutes'));
 app.use('/api/bulk-emails', require('./routes/bulkEmailRoutes'));
+app.use('/api/custom-payment-links', require('./routes/customPaymentLink.routes'));
 
 const PORT = process.env.PORT || 5000;
 

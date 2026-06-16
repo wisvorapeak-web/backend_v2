@@ -1,12 +1,9 @@
-const Organizer = require('../models/organizer.model');
+const CustomPaymentLink = require('../models/customPaymentLink.model');
+const emailService = require('../services/email.service');
 
 exports.getAll = async (req, res) => {
   try {
-    const filter = {};
-    if (req.query.category) {
-      filter.category = req.query.category;
-    }
-    const data = await Organizer.find(filter).sort({ display_order: 1 });
+    const data = await CustomPaymentLink.find().sort({ createdAt: -1 });
     res.status(200).json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -15,7 +12,7 @@ exports.getAll = async (req, res) => {
 
 exports.getById = async (req, res) => {
   try {
-    const data = await Organizer.findById(req.params.id);
+    const data = await CustomPaymentLink.findById(req.params.id);
     if (!data) return res.status(404).json({ message: 'Not found' });
     res.status(200).json(data);
   } catch (error) {
@@ -25,8 +22,16 @@ exports.getById = async (req, res) => {
 
 exports.create = async (req, res) => {
   try {
-    const newData = new Organizer(req.body);
+    const { email, publicLinkUrl, ...linkData } = req.body;
+    const newData = new CustomPaymentLink(linkData);
     const savedData = await newData.save();
+
+    if (email && publicLinkUrl) {
+      // Append the actual ID to the base URL
+      const fullUrl = `${publicLinkUrl}/${savedData._id}`;
+      await emailService.sendCustomPaymentLinkEmail(email, savedData, fullUrl);
+    }
+
     res.status(201).json(savedData);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -35,7 +40,7 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
   try {
-    const updatedData = await Organizer.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    const updatedData = await CustomPaymentLink.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (!updatedData) return res.status(404).json({ message: 'Not found' });
     res.status(200).json(updatedData);
   } catch (error) {
@@ -45,7 +50,7 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
   try {
-    const deletedData = await Organizer.findByIdAndDelete(req.params.id);
+    const deletedData = await CustomPaymentLink.findByIdAndDelete(req.params.id);
     if (!deletedData) return res.status(404).json({ message: 'Not found' });
     res.status(200).json({ message: 'Deleted successfully' });
   } catch (error) {
